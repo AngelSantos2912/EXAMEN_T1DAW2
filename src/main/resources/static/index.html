@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CRUD Aerolínea _ T1</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
+        body { font-family: Arial, sans-serif; margin: 20px; background: #deffcd }
         .card {
-            border: 1px solid #98a0ff;
+            background: #d7d8ff;
+            border: 1px solid #5f6cff;
             border-radius: 10px;
             padding: 20px;
             margin: 20px auto;
@@ -28,6 +29,7 @@
 <h1 style="text-align: center; color: darkblue">*✈️ Gestion de vuelos ✈️*</h1>
 
 <div class="card">
+    <h1 style="text-align: center">-*Registro*-</h1>
     <form id="vueloForm">
         <input type="hidden" id="vueloId">
         <label for="origen">🏳️ Pais de Origen:</label>
@@ -38,7 +40,7 @@
         <input type="date" id="fecha" required>
         <label for="precio">💲 Precio de viaje:</label>
         <input type="number" id="precio" required>
-        <button type="submit" style="background-color: greenyellow">✔️ Guardar Vuelo</button>
+        <button type="submit" style="background-color: greenyellow; border-radius: 20px">✔️ Guardar Vuelo</button>
     </form>
 </div>
 
@@ -106,8 +108,8 @@
             row.insertCell(4).textContent = vuelo.precio.toFixed(2);
             const actionsCell = row.insertCell(5);
             actionsCell.innerHTML = `
-                <button onclick="editVuelo(${vuelo.id})" style="background-color: yellow">✏️ Editar</button>
-                <button onclick="deleteVuelo(${vuelo.id})" style="background-color: red">❌ Eliminar</button>
+                <button onclick="editVuelo(${vuelo.id})" style="background-color: yellow; border-radius: 20px">✏️ Editar</button>
+                <button onclick="deleteVuelo(${vuelo.id})" style="background-color: red; border-radius: 20px">❌ Eliminar</button>
             `;
         });
     }
