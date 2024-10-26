@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Aerolínea _ T1</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .card {
+            border: 1px solid #98a0ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 400px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 2px solid #98a0ff; padding: 8px; text-align: left; }
+        th { background-color: #cdd1ff; }
+        form { display: flex; flex-direction: column; }
+        label { margin: 5px 0; }
+        input { margin-bottom: 10px; padding: 10px; font-size: 16px; width: 90%; }
+        button { padding: 10px; margin: 5px 0; border-radius: 5px; font-size: 16px; }
+    </style>
+</head>
+<body>
+
+<h1 style="text-align: center; color: darkblue">*✈️ Gestion de vuelos ✈️*</h1>
+
+<div class="card">
+    <form id="vueloForm">
+        <input type="hidden" id="vueloId">
+        <label for="origen">🏳️ Pais de Origen:</label>
+        <input type="text" id="origen" required>
+        <label for="destino">🏁 Pais de Destino:</label>
+        <input type="text" id="destino" required>
+        <label for="fecha">📆 Fecha de salida:</label>
+        <input type="date" id="fecha" required>
+        <label for="precio">💲 Precio de viaje:</label>
+        <input type="number" id="precio" required>
+        <button type="submit" style="background-color: greenyellow">✔️ Guardar Vuelo</button>
+    </form>
+</div>
+
+<table id="vuelosTable">
+    <thead>
+    <tr>
+        <th>📍 ID</th>
+        <th>🏳️ Origen</th>
+        <th>🏁 Destino</th>
+        <th>📆 Fecha</th>
+        <th>💲 Precio</th>
+        <th>🛠️ Acciones</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+    const vuelosTable = document.getElementById('vuelosTable').getElementsByTagName('tbody')[0];
+
+    document.getElementById('vueloForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('vueloId').value;
+        const vuelo = {
+            origen: document.getElementById('origen').value,
+            destino: document.getElementById('destino').value,
+            fecha: document.getElementById('fecha').value,
+            precio: parseFloat(document.getElementById('precio').value)
+        };
+
+        if (id) {
+            await fetch(`/vuelos/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(vuelo)
+            });
+        } else {
+            await fetch('/vuelos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(vuelo)
+            });
+        }
+
+        clearForm();
+        loadVuelos();
+    });
+
+    function clearForm() {
+        document.getElementById('vueloForm').reset();
+        document.getElementById('vueloId').value = '';
+    }
+
+    async function loadVuelos() {
+        const response = await fetch('/vuelos');
+        const vuelos = await response.json();
+        vuelosTable.innerHTML = '';
+
+        vuelos.forEach(vuelo => {
+            const row = vuelosTable.insertRow();
+            row.insertCell(0).textContent = vuelo.id;
+            row.insertCell(1).textContent = vuelo.origen;
+            row.insertCell(2).textContent = vuelo.destino;
+            row.insertCell(3).textContent = vuelo.fecha;
+            row.insertCell(4).textContent = vuelo.precio.toFixed(2);
+            const actionsCell = row.insertCell(5);
+            actionsCell.innerHTML = `
+                <button onclick="editVuelo(${vuelo.id})" style="background-color: yellow">✏️ Editar</button>
+                <button onclick="deleteVuelo(${vuelo.id})" style="background-color: red">❌ Eliminar</button>
+            `;
+        });
+    }
+
+    async function editVuelo(id) {
+        const response = await fetch(`/vuelos/${id}`);
+        const vuelo = await response.json();
+        document.getElementById('vueloId').value = vuelo.id;
+        document.getElementById('origen').value = vuelo.origen;
+        document.getElementById('destino').value = vuelo.destino;
+        document.getElementById('fecha').value = vuelo.fecha;
+        document.getElementById('precio').value = vuelo.precio;
+    }
+
+    async function deleteVuelo(id) {
+        await fetch(`/vuelos/${id}`, { method: 'DELETE' });
+        loadVuelos();
+    }
+
+    loadVuelos();
+</script>
+
+</body>
+</html>
